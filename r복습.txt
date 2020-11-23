@@ -1,0 +1,162 @@
+#########################2-1 데이터 호출하기 #########################
+int: numeric
+summary(pop_seoul)
+범주형을 개수로 나온다
+##1.1 read.table( )로 txt파일 불러오기
+## 탭으로 구분된 데이터 (txt파일의 경우 header를 써줘야 한다.)
+temp = read.table('pop_seoul.txt',  
+                  header=TRUE,
+                  fileEncoding='UTF-8')
+
+내보낼때 불러올때 차이는?
+내보낼 때, 무엇을 내보낼지(저장할 객체)를 명확히 해줘야 한다.
+
+# 데이터 불러오기
+SHEET1 = read.xlsx('test.xlsx', sheet=1)
+## xlsx 파일 경로와 시트 번호를 지정 sheet를 입력하지 않으면 기본값은 sheet1이다.
+
+
+######################### 1번 연습문제 
+데이터 불러오기 연습문제
+
+# data= read.xlsx('광역시도별_연령성별_인구수.xlsx', startRow=2)
+# data= read.xlsx('시도별_가구_주택종류.xlsx', startRow=2)
+# data= read.xlsx('아파트매매_2019_강남구.xlsx', startRow=17)
+
+
+######################### 2-2 R 연산하기 ##############################
+
+iris =  R내장 데이터로 연습하기에 좋다.
+
+iris[iris$Sepal.Length>=2,]
+$ == 특정 변수를 추출하겠다. [ 대괄호와 비슷
+
+a+b #벡터 변수의 덧셈
+a-b #벡터 변수의 뺄셈
+a*b #벡터 변수의 곱셈
+a/b #벡터 변수의 나눗셈
+
+a^b #벡터변수의 제곱(구성 요소들간의 제곱, 4^2, 5^3)
+
+#%/% : 나눗셈에서 몫만 출력함
+#%% : 나눗셈에서 몫만 출력함 (홀짝을 가릴 때 쓰기도 한다)
+
+a<-c(7,2)
+b<-c(3,4)
+a%/%b #벡터 변수의 정수나눗셈
+a%%b #벡터 변수의 나머지'
+#행렬의 곱
+A<-matrix(c(5,10,2,1), ncol=2)
+B<-matrix(c(3,4,5,6), ncol=2)
+#(5*3) + (2*4) ; (5*5) + (2*6) ; (10*3) + (1*4) ; (10*5) + (1*6)
+A;B (한 줄에 여러 행렬을 호출하고 싶을 때 )
+A%*%B
+
+
+######################## week. 4.3  열 추가 ####
+# ▶ 이번 절에서는 데이터의 열 추가에 대하여 알아본다.
+
+tmp_df <- data.frame(AA = c(1:5), BB = c("A","A","B","B","B"))
+
+head(tmp_df) # 데이터 확인 
+#CC컬럼을 새로 생성하고 그 안에 값을 1로 채워 넣음 
+tmp_df$CC <- 1
+tmp_df$CC <- 1
+#컬럼 AA와 컬럼 CC의 값의 합한 값을 새로운 DD컬럼으로 생성
+tmp_df$DD <- tmp_df$AA + tmp_df$CC
+head(tmp_df) # 데이터 확인 
+
+*AA의 데이터가 바뀐 경우, 코드를 다시 실행하면 변경값이 반영된다.
+
+names(tmp_df) =="CC"   무슨 변수들이 있는지 확인
+which(names(tmp_df)=="CC") true의 위치가 어디 있는가
+
+
+######################## 열 제거 ####
+
+# ▶ 열을 제거 하기 위해서는 열의 위치 번호에 (-)를 입력하여 제거 한다. 
+
+tmp_df[, -1] #첫번째 위치의 컬럼 제거
+
+tmp_df[, -"AA"]  #오류 발생함
+# 다음에 오류가 있습니다-"AA" : 단항연산자에 유효한 인자가 아닙니다
+
+tmp_df[, c("BB","CC","DD")]
+
+rm(list = ls()) #오브젝트 내의 모든 변수 삭제
+
+######################## 데이터 추출
+
+set.seed의 기능은 난수 생성 및 허용
+sample의 경우 난수 생성(무작위 추출)시 사용되며, 같은 값이 추출되도록 고정시키기 위해 사용하는게 set.seed이다.
+set.seed() 괄호 안에 숫자는 모든 정수를 넣을 수 있다. 같은 값이 추출되도록 ()안의 숫자를 동일하게 넣어야 같은 결과값이 나옴 
+
+head(Sample.df)
+#AA컬럼의 값중에서 a인 값만 추출
+#Type1
+Sample.df[Sample.df$AA == "a",] 
+: 대괄호 사용시 데이터 원본을 불러야 한다 그렇지 않은면 주체를 몰라서 값을 추출할 수 없다.
+
+#Type1
+Sample.df[Sample.df$AA %in% c("a","b"),]
+* %in% ~가 포함된거 다 가져와 or이 압축 되어 있는것
+* AA=='a' | AA=='b'
+
+#Type2
+subset(Sample.df, AA %in% c("a","b"))
+
+######################## 2번 연습문제 
+data(iris)
+head(iris)
+# 1. Sepal.Length 변수의 짝수행을 출력하시오 .
+iris$Sepal.Length[seq(2,150,2)]
+
+# 2. Subset을 사용해서 변수 Species 에서 setosa 인 데이터를 추출하시오
+subset(iris,iris$Species=="setosa")
+subset(iris,Species=="setosa")
+iris[iris$Species=="setosa"]
+
+# 3. 2번에서 뽑은 데이터를 a1에 저장하고 Sepal.Length 가 5 보다 작은 Petal.Width 의 합을 구하시오 
+a1<-subset(iris,iris$Species=="setosa")
+sum(a1[a1$Sepal.Length<5,"Petal.width"])
+
+#######################################
+##### 2-4 데이터 합치기 #####
+#######################################
+
+
+#### 데이터 합치기 ####
+# ▶ 데이터를 합치기 위해서 사용되는 함수는 cbind, rbind, merge 가 가장 많이 사용되어진다.
+
+*** cbine 데이터 단위로 합친다 $는 새로운 것을 붙인다는 느낌
+
+join을 할때는 다대다는 없다.
+하나는 master table 로 상품테이블(중복이 입력이되어있는) 주문테이블(주문할때마다 들어오는것)
+join을 할때 데이터 추가는 없다. (참조가 많아서 여러개 생길경우 중복값이 있다고 의심해 봐야한다.)
+
+################################ merge 연습문제 ###################################
+
+a1 <-  data.frame(name=c("aa","bb","cc"),value=seq(10,20,length.out = 3))
+a2 <-  data.frame(name=c("cc","dd","ee"),value=seq(30,50,length.out = 3))
+a3 <-  data.frame(name=c("aa","dd","ee","ff"),value=seq(20,80,length.out = 4),any=seq(0,3,1))
+
+#  1. a1 와 a2 를 행결합 하시오
+rbind(a1,a2)
+
+# 2. a3 와 a1 를 행결합하시오#########################
+install.packages("plyr")
+library(plyr)
+rbind.fill(a3,a1)
+
+
+# 3. a3 와 a2 를 name 기준으로 결합 하시오 (a3 데이터는 모두출력)
+merge(a3,a2,by='name',all.x=T)
+
+
+# 4. 3번 데이터를 z 에 저장하고 value.y 기준으로 정렬하시오
+z<-merge(a3,a2,by='name',all.x=T)
+z
+z[order(z$value.y),]
+
+데이터프레임 정렬하기
+- Data[order(정렬할 열,decreasing=),]
