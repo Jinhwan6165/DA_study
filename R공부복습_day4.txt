@@ -1,0 +1,135 @@
+######################
+####### dplyr ########
+######################
+
+###  slice( )로 특정 행만 불러오기
+## slice(데이터명, 잘라서가져올 행)
+## 행번호를 활용해서 특정 행을 불러오기
+## 행 슬라이스...
+
+### { filter(데이터명, 조건) }
+## 복수의 조건 사용
+## filter(데이터명, 조건1, 조건2, 조건3, ...)
+## 조건문은 논리연산(==, !=, >, < 등)을 활용
+## 'OR'은 | 로 연결, 'AND'는 ,로 연결
+##ex) 위 문장에서 성북구 뒤에는 and로 연결된것이다.
+
+### arrange( )로 정렬하기(오름차순)
+## arrange(데이터명, 정렬기준변수1, 정렬기준변수2, ...)
+
+### distinct( )로 반복 내용제거하기(중복제거)
+distinct( 데이터명, 조건)
+
+###################### 연습문제 ##########################
+data(iris)
+
+## 1.iris 데이터중 1부터 50행중 홀수, 100부터 150행중 짝수 선택
+###seq(1,50,2) seq(100,150, 2)
+slice(iris, c(seq(1,50,2),seq(100,150,2)))
+
+iris[c(seq(1,50,2),seq(100,150,2)),]
+## 2.iris 데이터중 Species가 "setosa"이면서 Sepal.Length가 5보다 큰 값을 추출하시오
+filter(iris, Species=='setosa',Sepal.Length>5)
+
+## 3.iris 데이터중 Sepal.Length는 내림차순 Sepal.Width는 오름차순으로 출력하시오
+arrange(iris, desc(iris$Selap.Length),iris$Sepal.Width)
+
+## 4.iris 데이터중 "Sepal.Width" 와 "Species" 열을 선택하시오
+select(iris,Sepal.Width,Species)
+select(iris,"Sepal.Width","Species")
+
+
+## 5.iris 데이터중 "Species"의 종류를 확인하시오
+distinct(iris, Species)
+
+## 6.iris 데이터중 "Sepal.Length" 와 "Sepal.Width" 두변수의 합을 Sepal_sum이라는 변수에 저장하시오
+mutate(iris, Sepal_sum=Sepal.Length+Sepal.Width)
+  
+## 7.iris 데이터중 "Species"의 종별 개수를 확인하시오
+count(iris, Species)
+
+## 8.iris 데이터중 Sepal.Length의 합과 Sepal.Width의 평균을 구하시오
+summarise(iris, sum=sum(Sepal.Length), mean=mean(Sepal.Width))
+
+## 9.iris 데이터중 "Petal.Width"의 상위 5개의 값을 출력
+top_n(iris, 5, Petal.Width)
+
+
+#####length 특정변수를 기준으로 행을 세는 것 
+
+
+
+### 파이프라인( %>% )을 활용한 연속작업
+delivery %>% 
+  filter(업종=='중국음식') %>%
+  group_by(시군구) %>% 
+  summarise(mean_call = mean(통화건수)) %>% 
+  arrange(desc(mean_call))
+
+
+### 데이터 저장
+new_data = delivery %>% 
+  filter(업종=='중국음식') %>% 
+  group_by(시군구) %>% 
+  summarise(mean_call = mean(통화건수)) %>% 
+  arrange(desc(mean_call))
+
+
+### 결과를 csv파일로 저장
+write.csv(new_data, 'result.csv', row.names=FALSE) 
+## 작업폴더(Working Directory)에 'result.csv'이름으로 저장
+
+###ungroup( )의 활용
+
+delivery %>% 
+  filter(업종=='중국음식') %>% 
+  group_by(시간대, 시군구) %>% 
+  summarise(mean_call = mean(통화건수))
+
+
+# 시군구별 상위 3대 시간대 확인
+delivery %>% 
+  filter(업종=='중국음식') %>% 
+  group_by(시간대, 시군구) %>% 
+  summarise(mean_call = mean(통화건수)) %>% 
+  ungroup() %>% 
+  group_by(시군구) %>% 
+  top_n(3, mean_call) %>% 
+  arrange(시군구, desc(mean_call))
+
+## summarise( )로 요약할 떄의 그룹과
+## top_n( )등의 선택에서의 그룹이 다를 때는
+## 중간에 ungroup( )을 넣어서 그룹 지정 해제
+
+########################### 연습문제 #############################
+
+##2 (실습) 보험료 데이터 요약하기
+
+# 예제 데이터 불러오기 
+ins = read.csv('insurance.csv')
+
+
+#1 데이터 ins에서 sex가 female인 관측치로 region별 관측치(행의 개수) 수 계산
+ins %>%
+  filter(sex=='female')%>%
+  count(region)
+
+##group_by로 묶고 싶은 경우, 다음과 같이 summarise 처리
+ins%>%
+  filter(sex=='female')%>%
+  group_by(region)%>%
+  summarise(num=n()) 
+
+
+#2 charges가 10000이상인 관측치 중에서 smoker별 평균 age 계산
+ins %>%
+  filter(charges>=10000)%>%
+  group_by(smoker)%>%
+  summarise(mean_age=mean(age))
+
+#3 age가 40 미만인 관측치 중에서 sex, smoker별 charges의 평균과 최댓값 계산   
+ins%>%
+  filter(age<40)%>%
+  group_by(sex,smoker)%>%
+  summarise(mean_charges=mean(charges),
+            max=max(charges))
