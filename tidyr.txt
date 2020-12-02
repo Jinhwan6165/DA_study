@@ -9,7 +9,7 @@ tidyr 데이터 정렬 형태 변경
  replace_na( ) : 결측값 처리
 complete( ) : 모든 조합 생성 
 
-cf> 로우를 컬럼으로 바꾸는 격?
+cf> SQL에서 로우를 컬럼으로 바꾸는 것과 비슷하다 
 
 # group_by( ) %>% summarise( )로 데이터 요약하기
 aggr = delivery %>% 
@@ -153,8 +153,8 @@ str_to_title("string") #첫 글자만
 ### 연습해보기
 
 # 문제 1
-# words를 모두 대문자로 바꾼 상태에서 'AA'를 포함한 단어의 개수는 총 몇개이며 어떤단어들이 있는가?
-sum(str_detect(str_to_upper(words),"AA")) #0개
+# words를 모두 대문자로 바꾼 상태에서 'AB'를 포함한 단어의 개수는 총 몇개이며 어떤단어들이 있는가?
+sum(str_detect(str_to_upper(words),"AB")) #0개
 str_which(str_detect(str_to_upper(words),"AA")]
 
 # 문제 2
