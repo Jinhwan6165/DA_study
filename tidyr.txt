@@ -1,0 +1,168 @@
+ ######Tidyr ######
+
+tidyr 데이터 정렬 형태 변경
+
+
+ spread( )  : 형태로 변환 (펼쳐져 있는 데이터를 모으는 것 
+ gather( ) 데이터 형태로 변환(길게 펼쳐져 있는 것을 모으는 것)
+ drop_na( ) : 결측값 제거
+ replace_na( ) : 결측값 처리
+complete( ) : 모든 조합 생성 
+
+cf> 로우를 컬럼으로 바꾸는 격?
+
+# group_by( ) %>% summarise( )로 데이터 요약하기
+aggr = delivery %>% 
+  group_by(시군구,시간대,요일,업종) %>% 
+  summarise(통화건수=sum(통화건수)) %>% 
+  as.data.frame()
+aggr
+
+
+
+##1.1 spread() 로 데이터를 여러 열로 나누기
+spread(데이터이름, 기준변수이름, 나열할 값) 순서에 유의해야한다.
+aggr %>% 
+  spread(업종, 통화건수) 
+
+aggr_wide = aggr %>% spread(업종, 통화건수) 
+aggr_wide
+
+
+##1.2 replace_na( )로 결측값 처리하기
+replace_na(list(변수1=값, 변수2=값, ...))
+aggr_wide %>% replace_na(list(족발보쌈=999, 중국음식=0, 치킨=0))
+####변수들의 값을 한번에 넣어줘야하므로 list로 묶어줘야 한다.
+
+##1.3 drop_na( )로 결측값을 포함한 관측치 버리기
+## drop_na(결측값을 찾을 변수1, 변수2, ...) 
+aggr_wide %>% drop_na()
+aggr_wide %>% drop_na(치킨, 피자)
+
+
+##1.4 gather( )로 여러 열을 한 열+구분변수로 만들기(wide->long)
+gather(데이터이름, 새기준변수이름, 새변수이름, 모을 변수들) 
+
+aggr_long = aggr_wide2 %>% gather(Category, Count, -(시군구:요일))
+## 순서대로 시군구부터 요일까지를 뺀 나머지 변수를 선택
+
+##1.5 complete( )로 빠져있는 조합 채우기
+nrow(aggr_wide2)
+## 3947 !=  4200 = 25(시군구)*24(시간대)*7(요일)
+
+
+aggr_wide2 %>% complete(시군구, 시간대, 요일)
+
+# fill= 옵션으로 빈값 채우기 
+aggr_wide2 %>% complete(시군구, 시간대, 요일, fill=list(족발보쌈=0, 중국음식=0, 치킨=0, 피자=0))  
+
+######################## 연습문제 #############################
+
+# (실습) gather( ) 함수를 활용하여 H05부터 H24까지 변수를 모아
+# '시간대'와 '승객수'으로 구분하는 데이터 subway2 만들기
+subway2 = NA
+subway2=gather(subway_2017,시간대,승객수,H05:H24)
+
+## 위에서 만든 subway2 데이터와 dplyr 패키지를 활용하여
+
+# 역명/시간대별 전체 승객수 합계 계산 (승객수 합계의 내림차순으로 정렬)
+subway2 %>%
+  group_by(역명,시간대)%>%
+  summarise(SUM=sum(승객수))%>%
+arrange(desc(SUM))
+
+# 위의 결과를 spread( ) 함수를 활용해서 표 형태로 변환
+subway2 %>%NA
+ 
+subway2 %>%
+  group_by(역명,시간대)%>%
+  summarise(SUM=sum(승객수))%>%
+  spread(시간대,SUM)
+
+# 역명/시간대/구분 별 전체 승객수 합계 계산
+subway2 %>% NA
+subway2 %>%
+  group_by(역명,시간대,구분)%>%
+  summarise(SUM=sum(승객수))%>%
+  arrange(desc(SUM))
+
+# 2월 한달간 역명/시간대/구분별 전체 승객수 합계 계산
+subway2 %>% NA
+subway2 %>%
+  filter(월==2)
+  group_by(역명,시간대,구분)%>%
+  summarise(SUM=sum(승객수))%>%
+  arrange(desc(SUM))
+
+##############################################################################
+
+###### 문자열 다루기 ######
+##불용어 처리/원하는 글자만 가져오기 등과 같은 경우에 사용
+## 기본 패키지 설치하기
+install.packages("stringr")
+library(stringr)
+
+# 큰따움표와 작은 땨움표
+  ##보통 큰따움표를 사용하는게 좋다 큰따움표 안에 작은 따움표 쓸수 있기 떄문이다.
+  ##반대로 하는 경우 R스튜디오가 큰따움표 안의 내용을 특수문자로 인식할 수 있다.
+  ## 추후 sql을 가져 올 경우에도 영향이 있다.(복습시 확인)
+
+#### 패턴찾기 ####
+
+##str_detect(데이터, 패턴) :논리형처럼 T(1)/F(0)로 나옴
+x <- c("apple", "banana", "pear")
+str_detect(x, "e")
+sum(str_detect(x, "e"))
+
+##str_count(데이터, 패턴): 패턴에 있는 글자 개수를 알려줌
+str_count(x,"e")
+str_count("aeeeee","e")
+
+##str_which(데이터, 패턴):패턴에 해당하는 게 어디 위치에 있는지 알려줌
+str_which(x,"e")
+str_which(c("e","a","e"),"e")
+
+##str_locate(데이터, 패턴): text내에서의 위치가 어디야?(중복이 있을 경우, 첫번째 위치의 것만 알려준다.)
+str_locate(x,"a")
+
+str_locate("aaa","aa") #추가 (a의 개수에 따라 1개)
+
+### 부분집합 찾기
+
+#str_sub(데이터, 시작, 끝)
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 4)
+str_sub(x, -3, -1) #뒤에서부터
+
+substr(x,1,3) #와 비슷하다. 
+
+#str_subset(데이터, 패턴) :패턴이 해당된 데이터를 뽑아줘라,
+str_subset(x,"r")
+
+### 문자열 변형하기
+# str_replace(데이터,찾는변수,바꿀변수) : 처음 찾는 것만 바꾼다.
+# str_replace_all(데이터,찾는변수,바꿀변수):해당되는 변수를 모두 바꾼다. 불용어 처리할 때 많이 쓰임 
+str_replace("apple","p","l")
+str_replace_all("apple","p","l")
+
+# Mutate STrings
+str_to_lower("STRING") #소문자로
+str_to_upper("string") #대문자로
+str_to_title("string") #첫 글자만
+
+### 연습해보기
+
+# 문제 1
+# words를 모두 대문자로 바꾼 상태에서 'AA'를 포함한 단어의 개수는 총 몇개이며 어떤단어들이 있는가?
+sum(str_detect(str_to_upper(words),"AA")) #0개
+str_which(str_detect(str_to_upper(words),"AA")]
+
+# 문제 2
+# words에서 "b"를 "a"로 모두 바꾸고 "aa"를 포함하는 단어 개수는?
+str_replace_all(words,"b","a")
+sum(str_detect(str_replace_all(words,"b","a"),"aa"))
+
+# 문제 3
+# words에서 "e"의 수는 전체 합과 평균은 몇인가?
+sum(str_count(words,"e"))
+mean(str_count(words,"e"))
