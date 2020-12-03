@@ -1,0 +1,136 @@
+#서브쿼리
+일반적인 쿼라(메인, 주 쿼리)안에 있는 또다른 쿼리로 보조 /하위쿼리라고 한다.
+메인쿼리와 서브쿼리가 합쳐져 한 문장을 이룸
+
+위치에 따라서 스칼라 서브쿼리, 인라인 뷰, 중첩 서브쿼리로 나뉜다.
+
+##.쿼리의 연관성
+연관성 있는 서브쿼리는 메인쿼리와 조인하고 
+연관성이 없는 서브쿼리는 메인쿼리와 독립적이다.
+
+
+###스칼라 서브쿼리
+메인쿼리의 Select 절에 위치한 서브쿼리
+Select 절에 
+단일값 ROW도 1개연산 값도 1개
+
+조인과 스칼라 서브쿼리
+스칼라 서브쿼리는 NULL의 값도 나오기 때문에 많이 쓰인다. 하지만 많은 데이터 상에 사용할 경우 성능상 좋지 않다.
+-> 외부조인 사용이 더 났다.
+
+###인라인 뷰의 서브쿼리는 메인쿼리의 from절에 위치하며, 서브쿼리 자체가 테이블 처럼 동작한다.
+최종 반환하는 로우와 칼럼, 표현식 수는 1개 이상 가능하다.
+하나의 테이블만 읽어서는 원하는 정보를 가져오기 어려우므로, 인라인 뷰의 쿼리가 여러 테이블을 조인하여 
+가져 올 수 있기 때문에 가장 많이 쓰이는 서브 쿼리이다. 
+
+LATERAL 사용해 서브쿼리 내에서 조인 조건이 가능해졌다.
+
+###중첩서브쿼리
+메인쿼리의 WHERE절에 위치한다.
+서브쿼리가 조건절의 칠부로 사용된다.
+값비교 가능
+
+1.   다음  문장은  어떤  정보를  조회하는지  설명해  보세요. 
+
+SELECT a.employee_id 
+,a.first_name || ' ' || a.last_name emp_name 
+,a.job_id 
+,a.salary 
+,( SELECT AVG(b.salary) 
+FROM employees b 
+WHERE a.job_id = b.job_id 
+GROUP BY b.job_id 
+)  avg_salary 
+FROM employees a; 
+
+===>사원의 그병와  job_ID 별 평균 급여값을 구하는 값이다.
+
+2. 다음  쿼리를  LATERAL 키워드를  사용해  같은  결과를  조회하도록  변경해  보세요
+SELECT b.department_name, loc.street_address, loc.country_name 
+FROM departments b ,
+LATERAL( SELECT l.location_id, l.street_address, c.country_name 
+FROM locations l,   countries c 
+WHERE l.country_id = c.country_id
+AND b.location_id = loc.location_i ) loc;
+
+3. 다음  문장을  IN 대신  EXISTS 연산자를  사용해  같은  결과를  조회하도록  변경해  보세요.
+
+SELECT employee_id, 
+job_id, salary 
+FROM employees 
+WHERE (job_id, salary ) IN ( SELECT job_id, min_salary 
+FROM jobs);
+
+SELECT employee_id, job_id, salary 
+FROM employees a
+WHERE  EXISTS
+(SELECT 1
+FROM jobs b
+WHERE a.job_id = b.job_id AND a.salary=b.min_salary
+);
+
+4. 다음은  ANTI 조인  문장입니다. 이  문장은  employees 테이블에  할당되지  않은  부서정보를 조회하려는  문장인데, 실행하면  데이터가  조회되지  않습니다. 해당  부서정보를  조회하도록 이  쿼리를  수정해  보세요. 
+SELECT * 
+FROM departments 
+WHERE department_id NOT IN ( SELECT a.department_id 
+FROM employees a ) ;
+
+SELECT * 
+FROM departments 
+WHERE department_id NOT IN ( SELECT a.department_id 
+FROM employees a
+WHERE a.department_id IS NOT NULL) ;
+
+5. covid19 테이블을  사용해  월별, 대륙별, 국가별  감염수와  각  국가가  속한  대륙을  기준으로 감염수  비율을  구하는  쿼리를  작성하시오. (서브쿼리  사용)
+SELECT a.months, a.continent, a.country,a.new_cases, b.continent_cases 
+, DECODE(b.continent_cases,0,0,
+ROUND(a.new_cases/b.continent_cases*100,2)) rates
+FROM (SELECT country,continent, TO_CHAR(dates,'YYYY-MM')months,sum(new_cases)new_cases
+ From COVID19
+ GROUP BY TO_CHAR(dates,'YYYY-MM'),country,continent)a
+ ,(SELECT continent
+ , TO_CHAR(dates,'YYYY-MM')months
+ , sum(new_cases)continent_cases
+ FROM COVID19
+ GROUP BY TO_CHAR(dates,'YYYY-MM'), continent)b
+ WHERE a.months = b.months
+ AND a.continent=b.continent
+ AND a.new_cases>0
+ ORDER BY  1,2,4 DESC;
+
+
+6. covid19 테이블을  사용해  2020년  한국의  월별  검사수, 확진자수, 확진율을  구하는  쿼리를 작성하시오
+
+SELECT TO_CHAR(dates, 'MM') months,
+NVL(SUM(new_tests),0)검사수,
+NVL(SUM(new_cases),0)확진자수, 
+ROUND(NVL(SUM(new_cases),0)/NVL(SUM(new_tests),0)*100,2) 확진율
+FROM COVID19
+WHERE ISO_CODE ='KOR'
+AND TO_CHAR(dates,'YYYY')='2020'
+GROUP BY TO_CHAR(dates,'MM')
+ORDER BY 1;
+
+
+7. Covid19 테이블에서 2020년 전체 가장 많은 확진자가 나온 상위 5개 국가를 구하는 쿼리를 작성하시오.
+
+ sum(new_cases)null값 처리/ 2020에 해당 / 국가별 그룹처리(world제외)/ total_cases top_n 넣기
+
+
+SELECT *
+FROM(SELECT country,
+NVL(SUM(new_cases),0)cases
+FROM COVID19
+WHERE TO_CHAR(dates,'YYYY')='2020'
+AND country <>'World'
+GROUP BY country
+)
+ORDER by cases DESC
+FETCH FIRST 5 ROWS ONLY;
+
+
+2. Covid19 테이블에서 2020년 인구대비 사망률이 가장 많은 상위 20개 국가를 구하는
+쿼리를 작성하시오.
+
+
+
