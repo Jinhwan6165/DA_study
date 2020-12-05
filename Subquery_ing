@@ -132,20 +132,8 @@ FETCH FIRST 5 ROWS ONLY;
 2. Covid19 테이블에서 2020년 인구대비 사망률이 가장 많은 상위 20개 국가를 구하는
 쿼리를 작성하시오.
 
-
-
-
-
-##############R&통계
-# 데이터 분석가 _ james        \
-#                                \
-# 스크립트 실행(Run a script)    \
-##  : Windows : 'Ctrl + Enter'   \
-##  : MAC     : 'Command + Enter'\
-#---------------------------------
-
-
-##0 색상
+### R&
+####0 색상
 
 # plot 함수로 색깔 점 찍기
 plot(0,0, pch=16, cex=10, col='black')
