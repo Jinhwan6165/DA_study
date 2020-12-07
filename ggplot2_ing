@@ -1,0 +1,143 @@
+#######################ggplot2 패키지를 활용한 시각화#######################
+
+#####0 색상
+# plot 함수로 색깔 점 찍기
+## 일반적으로 "col=" 옵션으로 색상 변경 가능/pch:점모양 cex:점크기
+plot(0,0, pch=16, cex=10, col='black')
+plot(0,0, pch=16, cex=10, col='dodgerblue')
+
+# 색상이름은 아래 참고  http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+
+# rgb( ) 함수와 "#RRGGBB" HEX코드 활용
+rgb(  0/255,  70/255,  42/255)
+## Ewha Green
+
+plot(0,0, pch=16, cex=10, col='#00462A')
+
+# RColorBrewer 패키지의 활용
+install.packages('RColorBrewer')
+library(RColorBrewer)
+
+# 패키지 내 모든 색상조합 확인  
+display.brewer.all()  
+
+# rgb( ) 함수와 "#RRGGBB" HEX코드 활용
+rgb(  0/255,  70/255,  42/255)
+## Ewha Green
+
+plot(0,0, pch=16, cex=10, col='#00462A')
+
+# RColorBrewer 패키지의 활용
+install.packages('RColorBrewer')
+library(RColorBrewer)
+
+## http://colorbrewer2.org/
+
+# 패키지 내 모든 색상조합 확인  
+display.brewer.all()  
+## 색상조합 이름 확인
+
+brewer.pal(9, 'Set1')
+
+#####ggplot2을 활용한 시각화
+ggplot2는 r의 시각화 라이브러리이다. 종류는 ggplot과 qplot이 있다. 수업에서는 ggplot2 활용법을 배움
+
+# ggplot2 패키지 설치, 불러오기 
+install.packages('ggplot2')
+library(ggplot2)
+
+# 데이터 요약/처리를 위한 패키지도 불러오기  
+library(dplyr)
+library(tidyr)
+
+
+# 축그리기
+ggplot(data1) +
+  aes(x = gdpPercap) + #x축 지정
+  aes(y = lifeExp) #y축 지정
+
+# 이렇게 한번에 그릴 수 있다.
+# ggplot(data1,aes(x=gdpPercap,y=lifeExp))
+# windows()   #시각화 결과를 따로 창에 띄워서 볼 때 사용하는 구문
+
+# 기본형식은 다음과 같다. 
+ggplot() +geom_point ()
+
+## 예시
+ggplot(data1) +
+  aes(x = gdpPercap) + #x축 지정
+  aes(y = lifeExp) + #y축 지정
+  geom_point() + #나타낼 그림
+  aes(color = continent) + #색 지정
+  aes(shape = continent) + #모양 지정
+  aes(size = pop) + #크기 지정
+  aes(alpha = lifeExp) #투명도
+
+#색지정 주의사항 - 같은 표현 / 
+###aes를 써서 축에 대한 기준을 명확히해서 쓴다면 어느 곳에 들어가도 괜찮다.
+###ggplot(aes(x=gdpPercap, y=lifeExp, color=continent))   /geom_point(aes(color=continent))
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color=continent)) + geom_point()
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp)) + geom_point(aes(color=continent))
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp)) + geom_point(color = "red")
+## 불가능
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color = "red")) + geom_point()
+### 색이 바뀐것이 아니라 변수의 이름을 "red"로 인식하는 것이다.
+
+# shape관련 주의 사항 / 같은표현
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color = continent, shape = continent)) + geom_point()
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color = continent)) + geom_point(aes(shape = continent))
+# 특정모양 지정할 경우, 따로 뺴서 geom_point에 적어준다. 
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color = continent)) + geom_point(shape = 3)
+
+# size관련 주의 사항같은표현
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color = continent, shape = continent, size = pop)) + geom_point()
+# 특정 크기 지정
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color = continent, shape = continent)) + geom_point(size = 3)
+
+# alpha(투명도) 주의사항 / 같은표현
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color = continent, shape = continent, size = pop, alpha = lifeExp)) + geom_point()
+# 특정 크기 지정
+data1 %>% ggplot(aes(x=gdpPercap, y=lifeExp, color = continent, shape = continent, size = pop)) + geom_point(alpha = 0.5)
+
+######geom_ 그래프 계열
+###산점도/산포도 geom_point()
+
+###선그래프  geom_line()
+시계열데이터 사용
+
+###박스플롯 geom_boxplot()
+양적데이터를 통해서 얻어낸 특이값의 개수와 자료의 대칭성, 산포도, 중앙값(다섯가지 요약수치)을 한 눈에 알 수 있습니다. 따라서 요약된 데이터를 사용할 수 없다.
+
+###히스토그램  geom_histogram()
+
+##막대그래프 geom_bar()
+##주의!
+## 막대그래프는 color이 아닌 fill로 사용! (누적에 대한 데이터 관련 ../산점도=color) color 로 칠 경우, 막대의 테두리만 색이 들어간다. ( 헷갈리면 fill과 color를 모두 사용하자)
+
+##첫째, x축의 값만 지정하여 빈도를 나타내는 그래프
+
+##둘째, x축과 y축의 값을 각각 지정하여 그리는 그래프
+### x와 y를 모두 지정해주고 싶으면? stat = "identity"
+#### 개별개별 지정하겠다는 의미로 y축을 설정하고 stat="identity"를 쓰지않으면 오류남
+>>> stat은 ‘통계’의 뜻을 가진 ‘Statistic’의 약자로, bar 그래프의 형태에 대해 지정해줍니다. identity는 y축 값의 높이를 데이터를 기반으로 정해줄 때 사용해줍니다. 즉, stat='identity'는 y축의 높이를 데이터의 값으로 하는 bar그래프의 형태로 지정한다는 것입니다.
+
+# 나눠서 그리는 방법! facet_grid()
+gapminder %>%
+  filter(year %in% c(2002,2007)) %>%
+  group_by(continent,year) %>%
+  dplyr::summarise(mean = mean(lifeExp)) %>%
+  ggplot() +  
+  aes(x = continent) +  
+  aes(y = mean) +
+  geom_bar(stat = "identity") +  
+  aes(color = continent) +  
+  aes(fill = continent) +
+  facet_grid(~year) # 특정 변수로 구분해서 그리고 싶다면?
+facet_grid : 행과 열을 형성하는 변수로 정의된 패널의 2차원 그리드를 생선한다.
+
+
+데이터분석시 참고사항 
+## 데이터의 종류에 따라서 시각화 할 때 사용하는 그래프가 달라진다.
+## 데이터분석에서 접근법이 중요하다 Accuracy에 대해서는 차후의 문제....;ㅅ;
+###+와 파이프라인(%>%)사용하는 경우를 잘 구분해야한다.
+###파이프라인 안에서 ggplot을 할 경우 데이터를 따로 안넣어 줘도 된다.
