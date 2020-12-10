@@ -1,0 +1,104 @@
+SELECT *
+FROM lotto_master;
+
+SELECT num1, COUNT(*)
+FROM lotto_master
+GROUP BY num1
+ORDER BY 1;
+
+SELECT num1,num2,num3,num4,num5,num6,COUNT(*)
+FROM lotto_master
+GROUP BY num1,num2,num3,num4,num5,num6
+HAVING COUNT(*)>1
+ORDER BY 1,2,3,4,5,6;
+
+SELECT num1 lotto_num, count(*) CNT
+FROM lotto_master
+GROUP BY num1
+UNION ALL
+SELECT num2 lotto_num, count(*) CNT
+FROM lotto_master
+GROUP BY num2
+ORDER BY 1;
+
+SELECT lotto_num, SUM(CNT) AS CNT
+FROM (SELECT num1 lotto_num, count(*)CNT
+    FROM lotto_master
+    GROUP BY num1
+    UNION ALL
+    SELECT num2 lotto_num, count(*) CNT
+    FROM lotto_master
+    GROUP BY num2)
+GROUP BY lotto_num
+ORDER BY 2 DESC;
+
+SELECT a. seq_no
+,a.draw_date
+,b.win_money
+,a.num1, a.num2, a.num3
+,a.num4, a.num5, a.num6, a.bonus
+FROM lotto_master a
+,lotto_detail b
+WHERE a.seq_no = b. seq_no
+AND b.rank_no=1
+ORDER BY b.win_money DESC;
+
+SELECT a. seq_no
+,a.draw_date
+,b.win_money
+,b.win_person_no
+,a.num1, a.num2, a.num3
+,a.num4, a.num5, a.num6, a.bonus
+FROM lotto_master a
+,lotto_detail b
+WHERE a.seq_no = b. seq_no
+AND b.rank_no=1
+AND b.win_person_no>0
+ORDER BY b.win_money;
+
+SELECT *
+FROM lotto_master 
+WHERE num1+1=num2
+OR num2+1=num3
+OR num3+1=num4
+OR num4+1=num5
+OR num5+1=num6
+ORDER BY 1;
+
+SELECT YEAR
+, trans_type
+, SUM(total_acct_num) AS 사고건수
+, SUM(death_person_num) AS 사망자수
+FROM traffic_accident
+GROUP BY YEAR, trans_type
+ORDER BY 1,2;
+
+SELECT CASE WHEN year BETWEEN 1980 AND 1989 THEN '1980년대'
+            WHEN year BETWEEN 1990 AND 1999 THEN '1990년대'
+            WHEN year BETWEEN 2000 AND 2009 THEN '2000년대'
+            WHEN year BETWEEN 2010 AND 2019 THEN '2010년대'
+        END AS YEARS
+, trans_type
+, SUM(total_acct_num) AS 사고건수
+FROM traffic_accident
+GROUP BY CASE WHEN year BETWEEN 1980 AND 1989 THEN '1980년대'
+            WHEN year BETWEEN 1990 AND 1999 THEN '1990년대'
+            WHEN year BETWEEN 2000 AND 2009 THEN '2000년대'
+            WHEN year BETWEEN 2010 AND 2019 THEN '2010년대'
+        END, trans_type
+ORDER BY 1,2;
+
+SELECT trans_type
+, SUM(CASE WHEN year BETWEEN 1980 AND 1989 THEN total_acct_num ELSE 0 END)"1980년대"
+, SUM(CASE WHEN year BETWEEN 1990 AND 1999 THEN total_acct_num ELSE 0 END)"1990년대"
+, SUM(CASE WHEN year BETWEEN 2000 AND 2009 THEN total_acct_num ELSE 0 END)"2000년대"
+, SUM(CASE WHEN year BETWEEN 2010 AND 2019 THEN total_acct_num ELSE 0 END)"2010년대"
+FROM traffic_accident
+GROUP BY trans_type
+ORDER BY trans_type;
+
+SELECT trans_type
+,ROUND(AVG(death_person_num/total_acct_num*100),0)death_per
+FROM traffic_accident
+WHERE total_acct_num >0
+GROUP BY trans_type;
