@@ -32,6 +32,7 @@ FROM (SELECT num1 lotto_num, count(*)CNT
 GROUP BY lotto_num
 ORDER BY 2 DESC;
 
+##1등 당첨금이 많은 회차
 SELECT a. seq_no
 ,a.draw_date
 ,b.win_money
@@ -43,6 +44,8 @@ WHERE a.seq_no = b. seq_no
 AND b.rank_no=1
 ORDER BY b.win_money DESC;
 
+
+#1등 당첨금이 적은 회차
 SELECT a. seq_no
 ,a.draw_date
 ,b.win_money
@@ -56,6 +59,7 @@ AND b.rank_no=1
 AND b.win_person_no>0
 ORDER BY b.win_money;
 
+## 연속된 숫자가 있는 회차 조회
 SELECT *
 FROM lotto_master 
 WHERE num1+1=num2
