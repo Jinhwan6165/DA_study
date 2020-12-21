@@ -1,0 +1,11 @@
+# survey 데티어에서 Sex변수와 Smoke가 연관이 있는지 검정하여라
+# 시각화 포함
+chisq.test(table(survey$Sex,survey$Smoke))
+mosaicplot(t(table(survey$Sex,survey$Smoke),col=c("deepskyblue", "brown2"))
+
+           # 2
+delivery = read.csv('SKT.csv', fileEncoding='UTF-8')
+head(delivery)
+# 요일별 업종의 차이가 있는지 검정하여라
+chisq.test(table(delivery$요일,delivery$업종))
+mosaicplot(t(table(delivery$요일,delivery$업종),col=c("deepskyblue", "brown2"))
