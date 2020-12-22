@@ -1,0 +1,664 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled0.ipynb",
+      "provenance": [],
+      "authorship_tag": "ABX9TyOl3P/Xth+yKYUx0SH/aoXL",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Jinhwan6165/data_nano/blob/main/1%EC%B0%A8%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EC%9E%90%EB%A3%8C%20%EB%BD%91%EA%B8%B0\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "voTWRxebWcso"
+      },
+      "source": [
+        "from urllib.request import Request, urlopen\r\n",
+        "from urllib.parse import urlencode, quote_plus\r\n",
+        "import pandas as pd\r\n",
+        "import json\r\n",
+        "\r\n",
+        "def baro_api(skey,res_id,encode):\r\n",
+        "\r\n",
+        "  stype ='json'\r\n",
+        "  url = 'http://apis.data.go.kr/B553077/api/open/sdsc/baroApi'\r\n",
+        "  params = f'?ServiceKey={skey}&type={stype}&resId={res_id}&' + encode\r\n",
+        "  query = url+params\r\n",
+        "  #print(query)\r\n",
+        "  \r\n",
+        "  request = Request(query)\r\n",
+        "  request.get_method = lambda: 'GET'\r\n",
+        "  response_body = urlopen(request).read()\r\n",
+        "  #print (response_body)\r\n",
+        "\r\n",
+        "  response_dict=json.loads(response_body.decode('utf=8'))\r\n",
+        "  items=response_dict['body']['items']\r\n",
+        "  df= pd.DataFrame(items)\r\n",
+        "\r\n",
+        "  return df\r\n",
+        "\r\n"
+      ],
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "__krUK6lZFTd"
+      },
+      "source": [
+        "지정내 상권조회"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 77
+        },
+        "id": "W4CqIx1VWsTb",
+        "outputId": "227ab963-937f-457f-c576-eb9b544c1f7e"
+      },
+      "source": [
+        "skey='APwFhASUkhnufGT0YhkZId3%2BYn43XA5fq%2FupKzwkUYKZsjwdiYx0mjZVxh6RYj76YXVY%2BiV2MtsmN1pkYgYEmQ%3D%3D'\r\n",
+        "res_id='storezone'\r\n",
+        "encode = urlencode({ quote_plus('key') : '573'})\r\n",
+        "baro_api(skey,res_id,encode)\r\n"
+      ],
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>trarNo</th>\n",
+              "      <th>mainTrarNm</th>\n",
+              "      <th>ctprvnCd</th>\n",
+              "      <th>ctprvnNm</th>\n",
+              "      <th>signguCd</th>\n",
+              "      <th>signguNm</th>\n",
+              "      <th>trarArea</th>\n",
+              "      <th>coordNum</th>\n",
+              "      <th>coords</th>\n",
+              "      <th>stdrDt</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>573</td>\n",
+              "      <td>부산 금정구 구서동역</td>\n",
+              "      <td>26</td>\n",
+              "      <td>부산광역시</td>\n",
+              "      <td>26410</td>\n",
+              "      <td>금정구</td>\n",
+              "      <td>66080.5</td>\n",
+              "      <td>16</td>\n",
+              "      <td>POLYGON ((129.09092 35.248544, 129.090527 35.2...</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "   trarNo  ...      stdrDt\n",
+              "0     573  ...  2015-12-17\n",
+              "\n",
+              "[1 rows x 10 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 17
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "0kD9j_f2ZL7Y"
+      },
+      "source": [
+        "반경내 상권조회"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 195
+        },
+        "id": "kSGSEcH5ZONN",
+        "outputId": "277ea8f4-7ff8-4cfd-9616-bd844ac46600"
+      },
+      "source": [
+        "encode = urlencode({ quote_plus('catId') : 'radius',quote_plus('radius') : '500', quote_plus('cx') : '127.004528',quote_plus('cy') : '37.567538'})\r\n",
+        "baro_api(skey,res_id,encode)"
+      ],
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>trarNo</th>\n",
+              "      <th>mainTrarNm</th>\n",
+              "      <th>ctprvnCd</th>\n",
+              "      <th>ctprvnNm</th>\n",
+              "      <th>signguCd</th>\n",
+              "      <th>signguNm</th>\n",
+              "      <th>trarArea</th>\n",
+              "      <th>coordNum</th>\n",
+              "      <th>coords</th>\n",
+              "      <th>stdrDt</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>2214</td>\n",
+              "      <td>을지로4가역</td>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11140</td>\n",
+              "      <td>중구</td>\n",
+              "      <td>88434.9</td>\n",
+              "      <td>8</td>\n",
+              "      <td>POLYGON ((126.999081 37.566789, 127.002102 37....</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>2216</td>\n",
+              "      <td>동대문시장</td>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11140</td>\n",
+              "      <td>중구</td>\n",
+              "      <td>68658.0</td>\n",
+              "      <td>15</td>\n",
+              "      <td>POLYGON ((127.009453 37.568775, 127.009445 37....</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>2207</td>\n",
+              "      <td>동대문역사문화공원역</td>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11140</td>\n",
+              "      <td>중구</td>\n",
+              "      <td>81499.1</td>\n",
+              "      <td>8</td>\n",
+              "      <td>POLYGON ((127.007565 37.565945, 127.004846 37....</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>2226</td>\n",
+              "      <td>동대문시장</td>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11110</td>\n",
+              "      <td>종로구</td>\n",
+              "      <td>82364.6</td>\n",
+              "      <td>28</td>\n",
+              "      <td>POLYGON ((127.009388 37.570565, 127.008984 37....</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>2225</td>\n",
+              "      <td>서울 종로구 종로5가역_1</td>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11110</td>\n",
+              "      <td>종로구</td>\n",
+              "      <td>50246.7</td>\n",
+              "      <td>20</td>\n",
+              "      <td>POLYGON ((127.001795 37.57082, 127.000088 37.5...</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "   trarNo  ...      stdrDt\n",
+              "0    2214  ...  2015-12-17\n",
+              "1    2216  ...  2015-12-17\n",
+              "2    2207  ...  2015-12-17\n",
+              "3    2226  ...  2015-12-17\n",
+              "4    2225  ...  2015-12-17\n",
+              "\n",
+              "[5 rows x 10 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 19
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "HwjT7bAla4s7"
+      },
+      "source": [
+        "사각형내 상권조회"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "CfoREr3-a67c"
+      },
+      "source": [
+        "encode = urlencode({ quote_plus('catId') : 'rectangle',quote_plus('radius') : '500', quote_plus('cx') : '127.004528',quote_plus('cy') : '37.567538'},quote_plus('radius') : '500')\r\n",
+        "baro_api(skey,res_id,encode)\r\n",
+        "\r\n",
+        "resId=storezone&catId=rectangle&minx=126.978020&miny=37.557825&maxx=126.987732&maxy=37.562022&ServiceKey=서비스인증키\r\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "brssbXR4bTyP"
+      },
+      "source": [
+        "행정구역"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 77
+        },
+        "id": "unnzi01pbVEA",
+        "outputId": "f643e7e6-bb5e-4c94-8735-48d9a3081b4f"
+      },
+      "source": [
+        "\r\n",
+        "encode = urlencode({ quote_plus('catId') : 'dong',quote_plus('divId') : 'adongCd', quote_plus('key') : '1168069000'})\r\n",
+        "baro_api(skey,res_id,encode)\r\n"
+      ],
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>trarNo</th>\n",
+              "      <th>mainTrarNm</th>\n",
+              "      <th>ctprvnCd</th>\n",
+              "      <th>ctprvnNm</th>\n",
+              "      <th>signguCd</th>\n",
+              "      <th>signguNm</th>\n",
+              "      <th>trarArea</th>\n",
+              "      <th>coordNum</th>\n",
+              "      <th>coords</th>\n",
+              "      <th>stdrDt</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>1784</td>\n",
+              "      <td>포이사거리</td>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11680</td>\n",
+              "      <td>강남구</td>\n",
+              "      <td>19816.5</td>\n",
+              "      <td>13</td>\n",
+              "      <td>POLYGON ((127.045483 37.477389, 127.045158 37....</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "   trarNo  ...      stdrDt\n",
+              "0    1784  ...  2015-12-17\n",
+              "\n",
+              "[1 rows x 10 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 21
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "3Azv91eLb-Ac"
+      },
+      "source": [
+        ""
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "0VFNsvQ3fADf"
+      },
+      "source": [
+        "행정동 단위 상가업소 조회 "
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 491
+        },
+        "id": "EMeTSPCdfD7D",
+        "outputId": "4eee2c32-67e9-44b4-9424-0120efb28847"
+      },
+      "source": [
+        "res_id = 'dong'\r\n",
+        "encode = urlencode({ quote_plus('catId') : 'admi',quote_plus('signguCd') : '11590'})\r\n",
+        "baro_api(skey,res_id,encode)"
+      ],
+      "execution_count": 23,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>ctprvnCd</th>\n",
+              "      <th>ctprvnNm</th>\n",
+              "      <th>signguCd</th>\n",
+              "      <th>signguNm</th>\n",
+              "      <th>adongCd</th>\n",
+              "      <th>adongNm</th>\n",
+              "      <th>stdrDt</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159051000</td>\n",
+              "      <td>노량진1동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159052000</td>\n",
+              "      <td>노량진2동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159066000</td>\n",
+              "      <td>대방동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159062000</td>\n",
+              "      <td>사당1동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159063000</td>\n",
+              "      <td>사당2동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>5</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159064000</td>\n",
+              "      <td>사당3동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>6</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159065000</td>\n",
+              "      <td>사당4동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>7</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159065100</td>\n",
+              "      <td>사당5동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>8</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159053000</td>\n",
+              "      <td>상도1동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>9</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159054000</td>\n",
+              "      <td>상도2동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>10</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159055000</td>\n",
+              "      <td>상도3동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>11</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159056000</td>\n",
+              "      <td>상도4동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>12</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159067000</td>\n",
+              "      <td>신대방1동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>13</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159068000</td>\n",
+              "      <td>신대방2동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>14</th>\n",
+              "      <td>11</td>\n",
+              "      <td>서울특별시</td>\n",
+              "      <td>11590</td>\n",
+              "      <td>동작구</td>\n",
+              "      <td>1159060500</td>\n",
+              "      <td>흑석동</td>\n",
+              "      <td>2015-12-17</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "   ctprvnCd ctprvnNm signguCd signguNm     adongCd adongNm      stdrDt\n",
+              "0        11    서울특별시    11590      동작구  1159051000   노량진1동  2015-12-17\n",
+              "1        11    서울특별시    11590      동작구  1159052000   노량진2동  2015-12-17\n",
+              "2        11    서울특별시    11590      동작구  1159066000     대방동  2015-12-17\n",
+              "3        11    서울특별시    11590      동작구  1159062000    사당1동  2015-12-17\n",
+              "4        11    서울특별시    11590      동작구  1159063000    사당2동  2015-12-17\n",
+              "5        11    서울특별시    11590      동작구  1159064000    사당3동  2015-12-17\n",
+              "6        11    서울특별시    11590      동작구  1159065000    사당4동  2015-12-17\n",
+              "7        11    서울특별시    11590      동작구  1159065100    사당5동  2015-12-17\n",
+              "8        11    서울특별시    11590      동작구  1159053000    상도1동  2015-12-17\n",
+              "9        11    서울특별시    11590      동작구  1159054000    상도2동  2015-12-17\n",
+              "10       11    서울특별시    11590      동작구  1159055000    상도3동  2015-12-17\n",
+              "11       11    서울특별시    11590      동작구  1159056000    상도4동  2015-12-17\n",
+              "12       11    서울특별시    11590      동작구  1159067000   신대방1동  2015-12-17\n",
+              "13       11    서울특별시    11590      동작구  1159068000   신대방2동  2015-12-17\n",
+              "14       11    서울특별시    11590      동작구  1159060500     흑석동  2015-12-17"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 23
+        }
+      ]
+    }
+  ]
+}
