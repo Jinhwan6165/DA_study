@@ -9,3 +9,6 @@ head(delivery)
 # 요일별 업종의 차이가 있는지 검정하여라
 chisq.test(table(delivery$요일,delivery$업종))
 mosaicplot(t(table(delivery$요일,delivery$업종),col=c("deepskyblue", "brown2"))
+
+
+# 카이제곱 
