@@ -1,0 +1,14 @@
+
+강서구 화곡동에서 금토일만 치킨팔기 
+ kk %>%
+  filter(시군구%in%'강서구')%>%
+  group_by(읍면동) %>%
+  dplyr::summarise(sum=sum(통화건수)) %>%
+  ggplot(aes(x=읍면동,y=sum))  +   geom_bar(stat="identity",position = "dodge")
+
+
+ kk %>%
+  filter(읍면동%in%'화곡동')%>%
+  group_by(읍면동,요일) %>%
+  dplyr::summarise(sum=sum(통화건수)) %>%
+  ggplot(aes(x=읍면동,y=sum,fill=요일))  +   geom_bar(stat="identity",position = "dodge")
