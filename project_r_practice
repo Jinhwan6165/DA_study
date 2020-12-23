@@ -1,0 +1,36 @@
+## 연습문제 풀어보기
+library(openxlsx)
+library(lubridate)
+subway_2017 = read.xlsx('subway_1701_1709.xlsx')
+names(subway_2017)[6:25] <- paste0('H', substr(names(subway_2017)[6:25], 1, 2))
+
+
+#  subway_2017데이터를 활용해서 요약 시각화를 진행하여라
+#1. gather을 사용해서 H05부터 H24까지 시간, 고객 변수명으로 데이터 변형하시오
+#2. facet_grid를 사용해서 시간별 고객의 합을 월별로 따라로 그리시오 (1,2,3,4월)
+
+## month를 사용해서 월 변수를 만들어야 한다.
+subway3 <- gather(subway_2017,"시간","고객",H05:H24)
+subway3 %>% 
+  mutate(month = month(날짜)) %>%
+  filter(month %in% c(1,2,3,4)) %>%
+  group_by(month, 시간) %>% 
+  summarise(SUM = sum(고객)) %>% 
+  arrange(desc(SUM)) %>%
+  ggplot(aes(x=시간,y=SUM,fill=factor(month))) + geom_bar(stat="identity") + facet_grid(~month)
+  
+
+### 치킨집 창업 전략
+강서구 화곡동에서 금토일만 치킨팔기 
+ kk %>%
+  filter(시군구%in%'강서구')%>%
+  group_by(읍면동) %>%
+  dplyr::summarise(sum=sum(통화건수)) %>%
+  ggplot(aes(x=읍면동,y=sum))  +   geom_bar(stat="identity",position = "dodge")
+
+
+ kk %>%
+  filter(읍면동%in%'화곡동')%>%
+  group_by(읍면동,요일) %>%
+  dplyr::summarise(sum=sum(통화건수)) %>%
+  ggplot(aes(x=읍면동,y=sum,fill=요일))  +   geom_bar(stat="identity",position = "dodge")
