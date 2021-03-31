@@ -59,7 +59,7 @@ AND b.rank_no=1
 AND b.win_person_no>0
 ORDER BY b.win_money;
 
-## 연속된 숫자가 있는 회차 조회
+## 연속된 숫자가 있는 당첨 회차 조회
 SELECT *
 FROM lotto_master 
 WHERE num1+1=num2
@@ -69,6 +69,8 @@ OR num4+1=num5
 OR num5+1=num6
 ORDER BY 1;
 
+
+### 교통사고 데이터 활용
 
 ## 교통수단 별 사고건수
 SELECT YEAR
