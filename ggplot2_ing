@@ -56,7 +56,7 @@ ggplot(data1) +
   aes(x = gdpPercap) + #x축 지정
   aes(y = lifeExp) #y축 지정
 
-# 이렇게 한번에 그릴 수 있다.
+# 한줄로 코드를 써서 그릴 수 있다.
 # ggplot(data1,aes(x=gdpPercap,y=lifeExp))
 # windows()   #시각화 결과를 따로 창에 띄워서 볼 때 사용하는 구문
 
