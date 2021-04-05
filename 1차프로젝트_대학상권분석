@@ -4,7 +4,7 @@ area_code<-merge(x=str_code,y=seoul_dj,by="행정동_코드")
 
 str(area_code)
 
-data1<-sales2019 %>%
+data1<-sales2019 %>%ㅡㅡ
   filter(기준_년_코드 >= 2019, 상권_구분_코드_명 == '골목상권',
                 상권_코드_명 %in% c('상도로61길','상도로62길','상도로37길','상도로47길'),
                 서비스_업종_코드%in% c("CS100001","CS100002",
@@ -18,3 +18,4 @@ data1<-sales2019 %>%
   
   
   
+ㅓㅓ
