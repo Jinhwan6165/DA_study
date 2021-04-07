@@ -3,7 +3,7 @@
 chisq.test(table(survey$Sex,survey$Smoke))
 mosaicplot(t(table(survey$Sex,survey$Smoke),col=c("deepskyblue", "brown2"))
 
-           # 2
+ # 2
 delivery = read.csv('SKT.csv', fileEncoding='UTF-8')
 head(delivery)
 # 요일별 업종의 차이가 있는지 검정하여라
