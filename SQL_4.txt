@@ -49,9 +49,9 @@ GROUP BY TO_CHAR(DATES, 'YYYY-MM')
 ORDER BY 1;
 
 HAVING 절
-HAVING 절은 해석상 WHERE 절과 동일하다. 단 조건 내용에 그룹 함수를 포함하는 것만을 포함한다.
+HAVING 절은 해석상 WHERE 절과 동일하다. 단 조건 내용에 그룹 함수 포함하는 것만을 포함한다.
 
-일반 조건은 WHERE 절에 기술하지만 그룹 함수를 포함한 조건은 HAVING 절에 기술한다.
+일반 조건은 WHERE 절에 기술하지만 그룹 함수를 포함한 조건은 HAVING절에 기술한다.
 
 
 4-2. 
