@@ -65,8 +65,8 @@ FROM employees
 WHERE department_id = 90
 ORDER BY job_id;
 
- 첫째 문장에서 SELECT job_id 'jobs' 알리야스 사용 불가한데 사용했기 떄문이다.
-select구문의 jobs를 없애거나 order by의 'job_id'를 'jobs'로 바꾸면 오류 없이 실행이 된다.
+ 첫째 문장에서 SELECT job_id 'jobs' 알리야스 사용 불가한데 사용했기 때문이다.
+select구문의 jobs를 없애거나 order by의 'job_id'를 'jobs'로 바꾸면 오류없이 실행된다.
 그 이유는 최종 변환되는 컬럼명은 맨 첫 SELECT 절의 컬럼 이름에 따르기 떄문이다.
 
 (2) 
